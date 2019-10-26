@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>S3 Files</title>
+</head>
+
+<script src="main.js"></script>
+
+<link rel="stylesheet"
+      href="https://unpkg.com/spectre.css/dist/spectre.min.css"
+      crossorigin="anonymous">
+
+<link rel="stylesheet"
+      href="https://unpkg.com/spectre.css/dist/spectre-icons.css"
+      crossorigin="anonymous">
+
+<body onload="main()" class="bg-dark text-gray">
+
+<div class="container grid-xl">
+
+  <div class="container">
+    <div class="columns">
+      <div class="column col-1"><i class="icon icon-download"></i> Size</div>
+      <div class="column col-2"><i class="icon icon-time"></i> Modified</div>
+      <div class="column col-9"><i class="icon icon-link"></i> Name</div>
+    </div>
+  </div>
+  <div class="container" id="s3-files">
+    <!-- auto populated -->
+    <div class="loading loading-lg"></div>
+  </div>
+
+</div>
+
+<div class="container grid-xl p-2" style="margin-bottom: 0">
+  <footer class="section section-footer">
+    <div class="container">
+      <p>
+        S3 Bucket Listing
+        <a href="https://github.com/hoto/s3-bucket-listing">v1.0.0</a>.
+        Licensed under the
+        <a href="https://github.com/hoto/s3-bucket-listing/blob/master/LICENSE">MIT</a>
+        License.
+        <br>
+
+        Powered by the
+        <a href="https://picturepan2.github.io/spectre/index.html">Spectre</a>
+        <img src="https://picturepan2.github.io/spectre/img/spectre-logo.svg"
+             width="15" height="15">
+        CSS framework.
+      </p>
+      <p>
+      </p>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>

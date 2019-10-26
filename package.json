@@ -1,0 +1,16 @@
+{
+    "name": "s3-bucket-listing",
+    "version": "1.0.0",
+    "description": "List files from Amazon S3 bucket.",
+    "main": "main.js",
+    "scripts": {
+        "test": "tape main.test.js | tap-nyc"
+    },
+    "author": "Andrzej Rehmann",
+    "license": "MIT",
+    "devDependencies": {
+        "tap-nyc": "1.0.3",
+        "tape": "4.11.0",
+        "xmldom": "0.1.27"
+    }
+}
