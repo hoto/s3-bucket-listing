@@ -14,8 +14,8 @@ const main = () => {
 }
 
 const loadConfig = () => ({
-  BUCKET_NAME: getQueryValue('bucket_name', 'this is tricky'),
-  REGION_URL: getQueryValue('region_url', 'this is tricky'),
+  BUCKET_NAME: getQueryValue('bucket_name') || bucketFromPath(location.pathname),
+  REGION_URL: getQueryValue('region_url') || location.hostname
 })
 
 const loadFiles = (xhr) => () => {
@@ -73,16 +73,16 @@ const convertTime = (time) => {
   return `${date.toDateString()} ${hour}:${minutes}`
 }
 
-const getQueryValue = (variableName, defaultValue) =>
-  getQueryParameters()
+const getQueryValue = (variableName) =>
+  extractQueryParameters()
     .filter(queryPair => !!queryPair[variableName])
     .map(queryPair => queryPair[variableName])
     .values()
     .next()
-    .value || defaultValue
+    .value
 
-const getQueryParameters = () => {
-  return window.location
+const extractQueryParameters = () => {
+  return location
     .search
     .substring(1)
     .split('&')
@@ -95,13 +95,18 @@ const getQueryParameters = () => {
     )
 }
 
+const bucketFromPath = (url) => {
+  return url.split('/')[1]
+}
+
 if (typeof module !== 'undefined') {
   module.exports = {
     loadConfig,
     parseXml,
     convertTime,
     bytesToMb,
-    getQueryParameters,
+    extractQueryParameters,
     getQueryValue,
+    bucketFromPath,
   }
 }

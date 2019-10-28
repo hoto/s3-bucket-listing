@@ -45,27 +45,18 @@ test('convert bytes to megabytes', (t) => {
   t.equals(converted, '0.27')
 })
 
-test('get query parameters', (t) => {
+test('extract query parameters', (t) => {
   t.plan(1)
-  global.window = {location: {search: {substring: () => 'KEY_1=VALUE_1&KEY_2=VALUE_2'}}}
+  location = {search: {substring: () => 'KEY_1=VALUE_1&KEY_2=VALUE_2'}}
 
-  const queries = main.getQueryParameters()
+  const queries = main.extractQueryParameters()
 
   t.deepEquals(queries, [{'KEY_1': 'VALUE_1'}, {'KEY_2': 'VALUE_2'}])
 })
 
-test('return default value if no matching query variable', (t) => {
-  t.plan(1)
-  global.window = {location: {search: {substring: () => 'KEY_1=VALUE_1&KEY_2=VALUE_2'}}}
-
-  const value = main.getQueryValue('KEY_3', 'DEFAULT_VALUE')
-
-  t.deepEquals(value, 'DEFAULT_VALUE')
-})
-
 test('get query variable', (t) => {
   t.plan(1)
-  global.window = {location: {search: {substring: () => 'KEY_1=VALUE_1&KEY_2=VALUE_2&KEY_2=VALUE_3'}}}
+  location = {search: {substring: () => 'KEY_1=VALUE_1&KEY_2=VALUE_2&KEY_2=VALUE_3'}}
 
   const value = main.getQueryValue('KEY_2')
 
@@ -74,12 +65,20 @@ test('get query variable', (t) => {
 
 test('config priorities query variables', (t) => {
   t.plan(2)
-  global.window = {location: {search: {substring: () => 'bucket_name=BUCKET_NAME&region_url=REGION_URL'}}}
+  location = {search: {substring: () => 'bucket_name=BUCKET_NAME&region_url=REGION_URL'}}
 
   const config = main.loadConfig()
 
   t.equals(config.BUCKET_NAME, 'BUCKET_NAME')
   t.equals(config.REGION_URL, 'REGION_URL')
+})
+
+test('extract bucket name from the url', (t) => {
+  t.plan(1)
+
+  const bucket = main.bucketFromPath('/BUCKET_NAME/FILE_NAME')
+
+  t.equals(bucket, 'BUCKET_NAME')
 })
 
 const xmlWith = ({name, size, lastModified}) => toXml(`
