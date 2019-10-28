@@ -9,16 +9,43 @@ const main = () => {
   config = loadConfig()
   const xhr = new XMLHttpRequest()
   xhr.open('get', `http://${config.BUCKET_NAME}.${config.REGION_URL}`)
-  xhr.onreadystatechange = loadFiles(xhr)
+  xhr.onreadystatechange = loadS3FilesOnScreen(xhr)
   xhr.send()
 }
 
 const loadConfig = () => ({
   BUCKET_NAME: getQueryValue('bucket_name') || bucketFromPath(location.pathname),
-  REGION_URL: getQueryValue('region_url') || location.hostname
+  REGION_URL: getQueryValue('region_url') || location.hostname,
+  FILE_NAME_FILTER: getQueryValue('file_name_filter') || ''
 })
 
-const loadFiles = (xhr) => () => {
+const getQueryValue = (variableName) =>
+  extractQueryParameters()
+    .filter(queryPair => !!queryPair[variableName])
+    .map(queryPair => queryPair[variableName])
+    .values()
+    .next()
+    .value
+
+const extractQueryParameters = () => {
+  return location
+    .search
+    .substring(1)
+    .split('&')
+    .map(queryPair => queryPair
+      .split('=')
+      .reduce((total, current, index, array) => {
+        total[array[0]] = array[1]
+        return total
+      }, {})
+    )
+}
+
+const bucketFromPath = (url) => {
+  return url.split('/')[1]
+}
+
+const loadS3FilesOnScreen = (xhr) => () => {
   if (xhr.readyState === XHR_REQUEST_FINISHED) {
     const xmlContents = Array.from(xhr
       .responseXML
@@ -42,8 +69,7 @@ const parseXml = (bucketUrl, xmlContents) => xmlContents
     ...file
   }))
 
-const extractField = (file, field) =>
-  file.getElementsByTagName(field)[0].firstChild.data
+const extractField = (file, field) => file.getElementsByTagName(field)[0].firstChild.data
 
 const toHtml = (file) =>
   `<div class="columns">
@@ -71,32 +97,6 @@ const convertTime = (time) => {
   const hour = date.getHours()
   const minutes = date.getMinutes()
   return `${date.toDateString()} ${hour}:${minutes}`
-}
-
-const getQueryValue = (variableName) =>
-  extractQueryParameters()
-    .filter(queryPair => !!queryPair[variableName])
-    .map(queryPair => queryPair[variableName])
-    .values()
-    .next()
-    .value
-
-const extractQueryParameters = () => {
-  return location
-    .search
-    .substring(1)
-    .split('&')
-    .map(queryPair => queryPair
-      .split('=')
-      .reduce((total, current, index, array) => {
-        total[array[0]] = array[1]
-        return total
-      }, {})
-    )
-}
-
-const bucketFromPath = (url) => {
-  return url.split('/')[1]
 }
 
 if (typeof module !== 'undefined') {
