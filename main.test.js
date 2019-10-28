@@ -4,47 +4,6 @@ const DOMParser = require('xmldom').DOMParser
 
 const BUCKET_URL = 'BUCKET_URL'
 
-test('parse xml contents from S3 as file objects', (t) => {
-  t.plan(1);
-  const xmlContents = [
-    xmlWith({name: "FILE_1", size: "SIZE", lastModified: "TIME"}),
-    xmlWith({name: "FILE_2", size: "SIZE", lastModified: "TIME"})
-  ];
-
-  const files = main.parseXml(BUCKET_URL, xmlContents)
-
-  t.deepEqual(files, [
-    {
-      name: 'FILE_1',
-      sizeInBytes: 'SIZE',
-      lastModified: 'TIME',
-      link: `<a class="text-secondary" href="${BUCKET_URL}/FILE_1">FILE_1</a>`,
-    },
-    {
-      name: 'FILE_2',
-      sizeInBytes: 'SIZE',
-      lastModified: 'TIME',
-      link: `<a class="text-secondary" href="${BUCKET_URL}/FILE_2">FILE_2</a>`,
-    }
-  ]);
-});
-
-test('convert time', (t) => {
-  t.plan(1)
-
-  const converted = main.convertTime('2019-12-31T10:34:44.000Z')
-
-  t.equals(converted, 'Tue Dec 31 2019 10:34')
-})
-
-test('convert bytes to megabytes', (t) => {
-  t.plan(1)
-
-  const converted = main.bytesToMb('270447')
-
-  t.equals(converted, '0.27')
-})
-
 test('extract query parameters', (t) => {
   t.plan(1)
   location = {search: {substring: () => 'KEY_1=VALUE_1&KEY_2=VALUE_2'}}
@@ -54,7 +13,7 @@ test('extract query parameters', (t) => {
   t.deepEquals(queries, [{'KEY_1': 'VALUE_1'}, {'KEY_2': 'VALUE_2'}])
 })
 
-test('get query variable', (t) => {
+test('extract query parameter value', (t) => {
   t.plan(1)
   location = {search: {substring: () => 'KEY_1=VALUE_1&KEY_2=VALUE_2&KEY_2=VALUE_3'}}
 
@@ -91,6 +50,47 @@ test('filter files by name', (t) => {
   t.true(main.filterByName('PATTERN')({name: '/some/path/PATTERN'}))
   t.true(main.filterByName('PATTERN')({name: '/some/path/my_pattern/filename'}))
 })
+
+test('convert bytes to megabytes', (t) => {
+  t.plan(1)
+
+  const converted = main.bytesToMb('270447')
+
+  t.equals(converted, '0.27')
+})
+
+test('convert time', (t) => {
+  t.plan(1)
+
+  const converted = main.convertTime('2019-12-31T10:34:44.000Z')
+
+  t.equals(converted, 'Tue Dec 31 2019 10:34')
+})
+
+test('parse xml contents from S3 as file objects', (t) => {
+  t.plan(1);
+  const xmlContents = [
+    xmlWith({name: "FILE_1", size: "SIZE", lastModified: "TIME"}),
+    xmlWith({name: "FILE_2", size: "SIZE", lastModified: "TIME"})
+  ];
+
+  const files = main.parseXml(BUCKET_URL, xmlContents)
+
+  t.deepEqual(files, [
+    {
+      name: 'FILE_1',
+      sizeInBytes: 'SIZE',
+      lastModified: 'TIME',
+      link: `<a class="text-secondary" href="${BUCKET_URL}/FILE_1">FILE_1</a>`,
+    },
+    {
+      name: 'FILE_2',
+      sizeInBytes: 'SIZE',
+      lastModified: 'TIME',
+      link: `<a class="text-secondary" href="${BUCKET_URL}/FILE_2">FILE_2</a>`,
+    }
+  ]);
+});
 
 const xmlWith = ({name, size, lastModified}) => toXml(`
     <Contents>
