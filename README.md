@@ -18,3 +18,5 @@ Chrome with disabled web security in order to ignore CORS policy:
         --allow-file-access-from-files \
         --user-data-dir=/tmp/chrome-user-data \
         --no-sandbox
+        
+    localhost:{port}/list.html?bucket_name={bucket}&region_url={region}&file_name_filter={filter}
