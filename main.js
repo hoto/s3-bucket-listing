@@ -2,13 +2,13 @@ console.log("Running main.js ...")
 
 const XHR_REQUEST_FINISHED = 4
 
-let config
+let config // having fun already
 
 const main = () => {
   console.log('Running main()...')
   config = loadConfig()
   const xhr = new XMLHttpRequest()
-  xhr.open('get', `http://${config.BUCKET_NAME}.${config.REGION_URL}`)
+  xhr.open('get', `https://${config.REGION_URL}/${config.BUCKET_NAME}`)
   xhr.onreadystatechange = loadS3FilesOnScreen(xhr)
   xhr.send()
 }

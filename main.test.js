@@ -81,7 +81,6 @@ test('extract bucket name from the url', (t) => {
   t.equals(bucket, 'BUCKET_NAME')
 })
 
-
 test('filter files by name', (t) => {
   t.plan(6)
 
