@@ -81,6 +81,18 @@ test('extract bucket name from the url', (t) => {
   t.equals(bucket, 'BUCKET_NAME')
 })
 
+
+test('filter files by name', (t) => {
+  t.plan(6)
+
+  t.false(main.filterByName('PATTERN')({name: ''}))
+  t.false(main.filterByName('PATTERN')({name: '/some/path/filename'}))
+  t.true(main.filterByName('PATTERN')({name: 'pattern'}))
+  t.true(main.filterByName('PATTERN')({name: 'PATTERN'}))
+  t.true(main.filterByName('PATTERN')({name: '/some/path/PATTERN'}))
+  t.true(main.filterByName('PATTERN')({name: '/some/path/my_pattern/filename'}))
+})
+
 const xmlWith = ({name, size, lastModified}) => toXml(`
     <Contents>
       <Key>${name}</Key>

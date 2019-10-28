@@ -42,7 +42,7 @@ const extractQueryParameters = () => {
 }
 
 const bucketFromPath = (url) => {
-  return url.split('/')[1]
+  return url ? url.split('/')[1] : 'ERROR_BUCKET_NOT_IN_THE_PATHNAME'
 }
 
 const loadS3FilesOnScreen = (xhr) => () => {
@@ -54,7 +54,11 @@ const loadS3FilesOnScreen = (xhr) => () => {
     const files = parseXml(bucketHttpsUrl, xmlContents)
     document
       .getElementById('s3-files')
-      .innerHTML = files.map(toHtml).join('')
+      .innerHTML =
+      files
+        .filter(filterByName(config.FILE_NAME_FILTER))
+        .map(toHtml)
+        .join('')
   }
 }
 
@@ -70,6 +74,10 @@ const parseXml = (bucketUrl, xmlContents) => xmlContents
   }))
 
 const extractField = (file, field) => file.getElementsByTagName(field)[0].firstChild.data
+
+const filterByName = (pattern) => (file) => file.name
+  .toLowerCase().includes(pattern.toLowerCase())
+
 
 const toHtml = (file) =>
   `<div class="columns">
@@ -108,5 +116,6 @@ if (typeof module !== 'undefined') {
     extractQueryParameters,
     getQueryValue,
     bucketFromPath,
+    filterByName
   }
 }
