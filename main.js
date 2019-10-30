@@ -1,12 +1,9 @@
-console.log("Running main.js ...")
-
 const XHR_REQUEST_FINISHED = 4
 
 let config = {}
 let allFiles = []
 
 const main = () => {
-  console.log('Running main()...')
   config = loadConfig()
   fetchAllContent('')
 }
@@ -71,16 +68,6 @@ const getFiles = (xhr) => () => {
   }
 }
 
-const loadS3FilesOnScreen = () => {
-  document
-    .getElementById('s3-files')
-    .innerHTML =
-    allFiles
-      .filter(filterByName(config.FILE_NAME_FILTER))
-      .map(toHtml)
-      .join('')
-}
-
 const parseXml = (bucketUrl, xmlContents) => xmlContents
   .map(file => ({
     name: extractField(file, 'Key'),
@@ -93,6 +80,16 @@ const parseXml = (bucketUrl, xmlContents) => xmlContents
   }))
 
 const extractField = (file, field) => file.getElementsByTagName(field)[0].firstChild.data
+
+const loadS3FilesOnScreen = () => {
+  document
+    .getElementById('s3-files')
+    .innerHTML =
+    allFiles
+      .filter(filterByName(config.FILE_NAME_FILTER))
+      .map(toHtml)
+      .join('')
+}
 
 const filterByName = (pattern) => (file) => file.name
   .toLowerCase().includes(pattern.toLowerCase())
