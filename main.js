@@ -2,15 +2,13 @@ console.log("Running main.js ...")
 
 const XHR_REQUEST_FINISHED = 4
 
-let config // having fun already
+let config = {}
+let allFiles = []
 
 const main = () => {
   console.log('Running main()...')
   config = loadConfig()
-  const xhr = new XMLHttpRequest()
-  xhr.open('get', `https://${config.REGION_URL}/${config.BUCKET_NAME}`)
-  xhr.onreadystatechange = loadS3FilesOnScreen(xhr)
-  xhr.send()
+  fetchAllContent('')
 }
 
 const loadConfig = () => ({
@@ -45,21 +43,42 @@ const bucketFromPath = (url) => {
   return url ? url.split('/')[1] : 'ERROR_BUCKET_NOT_IN_THE_PATHNAME'
 }
 
-const loadS3FilesOnScreen = (xhr) => () => {
+const fetchAllContent = (lastReceivedFileKey) => {
+  const xhr = new XMLHttpRequest()
+  const baseUrl = config.REGION_URL
+  const bucket = config.BUCKET_NAME
+  xhr.open('get',
+    `https://${baseUrl}/${bucket}?list-type=2&max-keys=1000&start-after=${lastReceivedFileKey}`)
+  xhr.onreadystatechange = getFiles(xhr)
+  xhr.send()
+}
+
+const getFiles = (xhr) => () => {
   if (xhr.readyState === XHR_REQUEST_FINISHED) {
-    const xmlContents = Array.from(xhr
-      .responseXML
+    const isTruncated = Array.from(xhr.responseXML
+      .getElementsByTagName('IsTruncated'))[0].firstChild.data
+    const xmlContents = Array.from(xhr.responseXML
       .getElementsByTagName('Contents'))
-    const bucketHttpsUrl = `https://${config.REGION_URL}/${config.BUCKET_NAME}`
-    const files = parseXml(bucketHttpsUrl, xmlContents)
-    document
-      .getElementById('s3-files')
-      .innerHTML =
-      files
-        .filter(filterByName(config.FILE_NAME_FILTER))
-        .map(toHtml)
-        .join('')
+    const bucketUrl = `https://${config.REGION_URL}/${config.BUCKET_NAME}`
+    const files = parseXml(bucketUrl, xmlContents)
+    allFiles = allFiles.concat(files)
+    if (isTruncated === 'true') {
+      const lastReceivedFileKey = files[files.length - 1].name
+      fetchAllContent(lastReceivedFileKey)
+    } else {
+      loadS3FilesOnScreen()
+    }
   }
+}
+
+const loadS3FilesOnScreen = () => {
+  document
+    .getElementById('s3-files')
+    .innerHTML =
+    allFiles
+      .filter(filterByName(config.FILE_NAME_FILTER))
+      .map(toHtml)
+      .join('')
 }
 
 const parseXml = (bucketUrl, xmlContents) => xmlContents
