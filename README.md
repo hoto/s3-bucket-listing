@@ -1,9 +1,6 @@
 # S3 Bucket Listing
 
-Still WIP
-
-Code is terrible, written for pure enjoyment of hacking some JS at midnight.  
-But it works! And it supports HTTPS! And has a dark theme!
+Support for HTTPS! And has a dark theme!
 
 ### Development
 
